@@ -1,6 +1,6 @@
 ﻿Console.Clear();
 
-/*Console.WriteLine("=== BLACKJACK ===");
+Console.WriteLine("=== BLACKJACK ===");
 Console.WriteLine("What is your name?");
 string name = Console.ReadLine().Trim();
 string filename = name + ".txt";
@@ -20,7 +20,7 @@ else
     Console.WriteLine($"Welcome {name}! Since you are a new player, you are given a starting balance of ${balance}.");
     string bankBalance = balance.ToString();
     File.WriteAllText(filename, name + "," + bankBalance);
-}*/
+}
 
 
 
@@ -63,4 +63,27 @@ static int DrawCard(List<int> deck)
     int card = deck[0];     
     deck.RemoveAt(0);        
     return card;
+}
+
+
+static string CardToString(int n)
+{
+    string[] suits = { "♥", "♦", "♣", "♠" };
+    string[] ranks = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+
+    int rankIndex = n / 4;      // n / 4 → 0–12
+    int suitIndex = n % 4;      // n % 4 → 0–3
+
+    return "[" + suits[suitIndex] + ranks[rankIndex] + "]";
+}
+
+static string HandToString(List<int> hand)
+{
+    List<string> cards = new List<string>();
+    foreach (int c in hand)
+    {
+        cards.Add(CardToString(c));
+    }
+        
+    return string.Join("", cards);
 }
