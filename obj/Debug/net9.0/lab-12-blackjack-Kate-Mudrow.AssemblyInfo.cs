@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("lab-12-blackjack-Kate-Mudrow")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e45b80ab5ed41ab89db2af354d147ecc2f11163e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+20331154279f63d242ba08e374fb2e6c6ce8088c")]
 [assembly: System.Reflection.AssemblyProductAttribute("lab-12-blackjack-Kate-Mudrow")]
 [assembly: System.Reflection.AssemblyTitleAttribute("lab-12-blackjack-Kate-Mudrow")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
