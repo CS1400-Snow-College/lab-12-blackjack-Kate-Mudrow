@@ -1,5 +1,12 @@
 ﻿Console.Clear();
 
+bool playAgain = true;
+
+while (playAgain)
+{
+    Console.Clear();
+
+
 Console.WriteLine("=== BLACKJACK ===");
 Console.WriteLine("What is your name?");
 string name = Console.ReadLine().Trim();
@@ -75,16 +82,123 @@ dealerHand.Add(DrawCard(deck));
 int playerTotal = HandTotal(playerHand);
 int dealerTotal = HandTotal(dealerHand);
 
-Console.WriteLine("{0,-20} {1,-15} Total: {2}", $"{name}'s hand:", HandToString(playerHand), playerTotal);
-Console.WriteLine("{0,-20} {1,-15}", "Dealer Shows:", CardToString(dealerHand[0]) + "[?]");
+Console.WriteLine("{0,-25} Total: {1}", $"{name}'s hand: {HandToString(playerHand)}", playerTotal);
+Console.WriteLine("{0,-25}", "Dealer Shows: " + CardToString(dealerHand[0]) + " [?]");
 
 
 Console.WriteLine();
 
-bet = PlayerTurn(name, playerHand, deck, bet);
+playerTotal = PlayerTurn(name, playerHand, deck, ref bet);
+
+playerTotal = HandTotal(playerHand);
+dealerTotal = DealerTurn(dealerHand, deck);
 
 
-static decimal PlayerTurn(string name, List<int> playerHand, List<int> deck, decimal bet)
+
+//Payout
+bool playerBlackjack = playerHand.Count == 2 && playerTotal == 21;
+bool dealerBlackjack = dealerHand.Count == 2 && dealerTotal == 21;
+
+Console.WriteLine(); 
+
+if (playerBlackjack && !dealerBlackjack) 
+{
+    decimal payout = bet * 1.5m;
+    Console.WriteLine($"Blackjack! You win {payout}!");
+    balance += payout;
+}
+else if (dealerBlackjack && !playerBlackjack)
+{
+    Console.WriteLine("Dealer has Blackjack! You lose.");
+    balance -= bet;
+}
+else if (playerTotal > 21)
+{
+    Console.WriteLine("You busted! Dealer wins.");
+    balance -= bet;
+}
+else if (dealerTotal > 21)
+{
+    Console.WriteLine("Dealer busted! You win!");
+    balance += bet;
+}
+else if (playerTotal > dealerTotal)
+{
+    Console.WriteLine("You win!");
+    balance += bet;
+}
+else if (playerTotal < dealerTotal)
+{
+    Console.WriteLine("Dealer wins!");
+    balance -= bet;
+}
+else // tie
+{
+    Console.WriteLine("Push! You get your bet back.");
+}
+
+if(balance <= 0)
+{
+    Console.WriteLine("The casino takes pity on you and wants you to play again to feed your gambling addiction. You are given $50");
+    balance = 50;
+}
+
+Console.WriteLine($"Your balance is now: ${balance}");
+
+
+File.WriteAllText(filename, $"{name},{balance}");
+
+Console.WriteLine();
+
+Console.Write("\nWould you like to play again? (Y/N)" );
+string again = Console.ReadLine().Trim().ToUpper();
+
+if (again != "Y")
+{
+    playAgain = false;
+    Console.WriteLine("Thanks for playing!");
+}
+
+}
+
+
+
+
+
+
+
+
+static int DealerTurn(List<int> dealerHand, List<int> deck)
+{
+    int dealerTotal = HandTotal(dealerHand);
+    Console.WriteLine("Dealer's hand: " + HandToString(dealerHand) + $" Total: {dealerTotal}");
+
+    while (dealerTotal < 17) // hit on 16 or less
+    {
+        int card = DrawCard(deck);
+        dealerHand.Add(card);
+        dealerTotal = HandTotal(dealerHand);
+        Console.WriteLine($"Dealer draws {CardToString(card)}");
+        Console.WriteLine($"Dealer's hand: {HandToString(dealerHand)} Total: {dealerTotal}");
+
+    }
+
+    if (dealerTotal >= 17 && dealerTotal <= 21)
+        Console.WriteLine("Dealer stands.");
+    else if (dealerTotal > 21)
+        Console.WriteLine("Dealer busts!");
+
+    return dealerTotal;
+}
+
+
+
+
+
+
+
+
+static int PlayerTurn(string name, List<int> playerHand, List<int> deck, ref decimal bet)
 {
     string playerChoice = "";
     bool firstTurn = true;
@@ -99,6 +213,11 @@ static decimal PlayerTurn(string name, List<int> playerHand, List<int> deck, dec
         {
             case "H":
                 playerTotal = Hit(playerHand, deck, name);
+                if (playerTotal == 21)
+                {
+                Console.WriteLine("You have 21! Automatically standing.");
+                playerChoice = "S";
+                }
                 break;
             case "S":
                 playerTotal = Stand(playerHand, name);
@@ -122,9 +241,8 @@ static decimal PlayerTurn(string name, List<int> playerHand, List<int> deck, dec
 
     } while (playerChoice != "S" && playerTotal <= 21);
 
-    return bet; 
+    return playerTotal; 
 }
-
 
 
 
@@ -136,7 +254,7 @@ static int Hit(List<int> hand, List<int> deck, string name)
     hand.Add(card);
     int total = HandTotal(hand);
     Console.WriteLine($"You drew {CardToString(card)}");
-    Console.WriteLine($"{name}'s hand: {HandToString(hand)} Total: {total}");
+    Console.WriteLine("{0,-25} Total: {1}", $"{name}'s hand: {HandToString(hand)}", total);
     return total;
 }
 
@@ -144,7 +262,7 @@ static int Stand(List<int> hand, string name)
 {
     int total = HandTotal(hand);
     Console.WriteLine("You chose to stand.");
-    Console.WriteLine($"{name}'s hand: {HandToString(hand)} Total: {total}");
+    Console.WriteLine("{0,-25} Total: {1}", $"{name}'s hand: {HandToString(hand)}", total);
     return total;
 }
 
@@ -155,23 +273,9 @@ static decimal DoubleDown(List<int> hand, List<int> deck, ref decimal bet, strin
     hand.Add(card);
     int total = HandTotal(hand);
     Console.WriteLine($"You doubled down and drew {CardToString(card)}");
-    Console.WriteLine($"{name}'s hand: {HandToString(hand)} Total: {total}");
+    Console.WriteLine("{0,-25} Total: {1}", $"{name}'s hand: {HandToString(hand)}", total);
     return total;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -222,7 +326,9 @@ static string CardToString(int n)
     int rankIndex = n / 4;      // n / 4  0–12
     int suitIndex = n % 4;      // n % 4  0–3
 
-    return "[" + suits[suitIndex] + ranks[rankIndex] + "]";
+    string card = "[" + suits[suitIndex] + ranks[rankIndex] + "]";
+    
+    return card.PadRight(5); 
 }
 
 
