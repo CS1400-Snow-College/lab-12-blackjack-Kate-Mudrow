@@ -179,7 +179,7 @@ if (again != "Y")
 static int DealerTurn(List<int> dealerHand, List<int> deck)
 {
     int dealerTotal = HandTotal(dealerHand);
-    Console.WriteLine("Dealer's hand: " + HandToString(dealerHand) + $" Total: {dealerTotal}");
+    Console.WriteLine($"Dealer's hand: {HandToString(dealerHand)} Total: {dealerTotal}");
 
     while (dealerTotal < 17) // hit on 16 or less
     {
@@ -235,7 +235,7 @@ static int PlayerTurn(string name, List<int> playerHand, List<int> deck, ref dec
                 {
                     playerTotal = (int)DoubleDown(playerHand, deck, ref bet, name);
                 }
-                else
+                else 
                 {
                     Console.WriteLine("You can only double down on your first turn.");
                 }
