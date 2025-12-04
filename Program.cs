@@ -1,4 +1,11 @@
-﻿Console.Clear();
+﻿/*
+Name: Kate Mudrow
+Date: 12/3/2025
+Lab: Lab 12 Blackjack
+*/
+
+
+Console.Clear();
 
 bool playAgain = true;
 
@@ -66,6 +73,7 @@ while (!validBet)
 Console.Clear();
 Console.WriteLine($"Player bet: ${bet}");
 
+
 List<int> deck = CreateDeck();
 Shuffle(deck);
 
@@ -83,7 +91,7 @@ int playerTotal = HandTotal(playerHand);
 int dealerTotal = HandTotal(dealerHand);
 
 Console.WriteLine("{0,-25} Total: {1}", $"{name}'s hand: {HandToString(playerHand)}", playerTotal);
-Console.WriteLine("{0,-25}", "Dealer Shows: " + CardToString(dealerHand[0]) + " [?]");
+Console.WriteLine("{0,-25}", $"Dealer Shows: {CardToString(dealerHand[0])} [?]");
 
 
 Console.WriteLine();
